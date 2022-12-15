@@ -47,5 +47,18 @@ class Database:
             finally:
                 await self._connection_pool.release(self.con)
 
-
+    async def execute(self, query: str):
+        if not self._connection_pool:
+            await self.connect()
+        else:
+            self.con = await self._connection_pool.acquire()
+            try:
+                result = await self.con.execute(query)
+                print("Results", result)
+                return result
+            except Exception as e:
+                print(e)
+            finally:
+                await self._connection_pool.release(self.con)
+                
 database_instance = Database()
