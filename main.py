@@ -4,13 +4,11 @@ from database import engine
 from connection_pool import database_instance
 from fastapi.middleware.cors import CORSMiddleware
 
-#Not needed due to Alembic
-# models.Base.metadata.create_all(bind=engine)
-
+# Fast API
 app = FastAPI()
 
 origins = ["*"]
-
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -19,14 +17,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Including routers
 app.include_router(userview.router)
 
+# Start up event
 @app.on_event("startup")
 async def startup():
     await database_instance.connect()
 
-
-
+# Main route
 @app.get("/")
 async def root():
     return {"message": "CMMS APP"}
